@@ -5,6 +5,7 @@
     "start": "next start"
   },
   "dependencies": {
+    "@clerk/clerk-react": "^5.4.1",
     "@clerk/nextjs": "^5.3.1",
     "@emotion/react": "^11.13.0",
     "@emotion/styled": "^11.13.0",
@@ -12,6 +13,10 @@
     "@stripe/stripe-js": "^4.3.0",
     "firebase": "^10.13.0",
     "openai": "^4.56.0",
-    "stripe": "^16.8.0"
+    "stripe": "^16.8.0",
+    "swr": "^2.2.5"
+  },
+  "devDependencies": {
+    "typescript": "5.5.4"
   }
 }
