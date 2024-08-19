@@ -1,3 +1,4 @@
+import { common } from '@mui/material/colors';
 import {NextResponse} from 'next/server'
 import OpenAI from 'openai'
 
@@ -13,13 +14,21 @@ return in the following JSON format
     }
   ]
 }
+just return the JSON do not return any thing extra
 `;
 export async function POST(req) {
+
+  try {
+    
+  console.log("req" , req.body);
+  
   const openai = new OpenAI({
     baseURL: "https://openrouter.ai/api/v1",
     apiKey: process.env.LLAMA8B_API_KEY,
   })
   const data = await req.text()
+
+  // console.log(data);
 
   const completion = await openai.chat.completions.create({
     messages: [
@@ -29,10 +38,20 @@ export async function POST(req) {
     model: 'meta-llama/llama-3.1-8b-instruct:free',
     response_format: { type: 'json_object' },
   })
-
+  console.log(completion.choices[0].message.content);
+  
   // Parse the JSON response from the OpenAI API
   const flashcards = JSON.parse(completion.choices[0].message.content)
-
+  console.log(flashcards);
+  console.log("success");
+  
+  // return NextResponse.json({1 : "muneeb"} ,  { status: 201 })
+  
   // Return the flashcards as a JSON response
   return NextResponse.json(flashcards.flashcards)
-}
+
+  } catch (error) {
+    // console.log(error); 
+    
+  }
+  } 

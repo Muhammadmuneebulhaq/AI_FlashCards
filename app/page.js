@@ -12,6 +12,9 @@ import {
   DialogContent,
   DialogContentText,
   DialogActions,
+  Grid,
+  Card,
+  CardContent
 } from '@mui/material'
 
 export default function Generate() {
@@ -27,7 +30,7 @@ export default function Generate() {
       alert('Please enter some text to generate flashcards.')
       return
     }
-  
+    
     try {
       const response = await fetch('/api/generate', {
         method: 'POST',
