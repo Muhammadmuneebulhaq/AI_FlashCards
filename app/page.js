@@ -90,21 +90,19 @@ export default function Generate() {
   }
 
   return (
-    <Container maxWidth="lg">
+    <Container maxWidth="100vw">
       <AppBar position="static">
         <Toolbar>
           <Typography variant="h6" sx={{ flexGrow: 1 }}>
             Flashcard SaaS
           </Typography>
-          <Button color="inherit">
-            <Link href="/signin" passHref>
-              Sign In
-            </Link>
+          <Button color="inherit" href="/sign-in">
+            <Link herf="/sign-in" passhref></Link>
+            Sign In
           </Button>
-          <Button color="inherit">
-            <Link href="/signup" passHref>
-              Sign Up
-            </Link>
+          <Button color="inherit" href="/sign-up">
+            <Link herf="/sign-up" passhref></Link>
+            Sign Up
           </Button>
         </Toolbar>
       </AppBar>

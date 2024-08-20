@@ -13,16 +13,18 @@ import {
 
 export default function SignUpPage() {
   return (
-    <Container>
+    <Container maxWidth="100vw">
       <AppBar position="static">
         <Toolbar>
-          <Typography variant="h6"></Typography>
+        <Typography variant="h6" sx={{ flexGrow: 1 }}>
+            Flashcard SaaS
+          </Typography>
           <Button color="inherit" href="/sign-in">
-            <Link herf="/sign-in" passHref></Link>
+            <Link herf="/sign-in" passhref></Link>
             Sign In
           </Button>
           <Button color="inherit" href="/sign-up">
-            <Link herf="/sign-up" passHref></Link>
+            <Link herf="/sign-up" passhref></Link>
             Sign Up
           </Button>
         </Toolbar>
