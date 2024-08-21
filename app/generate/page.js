@@ -1,10 +1,10 @@
 "use client";
 
 import { UserButton, useUser } from "@clerk/clerk-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { db } from "../../firebase";
-import { writeBatch, getDoc, collection, doc } from "firebase/firestore";
+import { writeBatch, getDoc, collection, doc, query, getDocs } from "firebase/firestore";
 import {
   Container,
   TextField,
@@ -21,6 +21,10 @@ import {
   CardContent,
   AppBar,
   Toolbar,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
 } from "@mui/material";
 
 export default function Generate() {
@@ -30,7 +34,24 @@ export default function Generate() {
   const [text, setText] = useState("");
   const [name, setName] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [existingCollections, setExistingCollections] = useState([]);
+  const [selectedCollection, setSelectedCollection] = useState("");
   const router = useRouter();
+
+  useEffect(() => {
+    const fetchCollections = async () => {
+      const userDocRef = doc(collection(db, "users"), user.id);
+      const docSnap = await getDoc(userDocRef);
+      if (docSnap.exists()) {
+        const flashcardSets = docSnap.data().flashcardSets || [];
+        setExistingCollections(flashcardSets.map((set) => set.name));
+      }
+    };
+
+    if (isLoaded && isSignedIn) {
+      fetchCollections();
+    }
+  }, [isLoaded, isSignedIn, user.id]);
 
   const handleSubmit = async () => {
     if (!text.trim()) {
@@ -70,23 +91,19 @@ export default function Generate() {
     setDialogOpen(false);
   };
 
-  
   const saveFlashcards = async () => {
-    if (!name) {
-      alert("Please enter a name for your flashcard set.");
+    if (!name && !selectedCollection) {
+      alert("Please enter a name for your flashcard set or select an existing collection.");
       return;
     }
-  
+
     const batch = writeBatch(db);
     const userDocRef = doc(collection(db, "users"), user.id);
-    
-    console.log("User ID:", user.id);
-    console.log("UserDocRef:", userDocRef);
-  
+
     const docSnap = await getDoc(userDocRef);
-  
-    if (docSnap.exists()) {
-      let flashcardSets = docSnap.data().flashcardSets || [];
+    let flashcardSets = docSnap.data().flashcardSets || [];
+
+    if (name) {
       if (flashcardSets.find((set) => set.name === name)) {
         alert("A flashcard set with that name already exists.");
         return;
@@ -95,42 +112,44 @@ export default function Generate() {
         batch.set(userDocRef, { flashcardSets }, { merge: true });
       }
     } else {
-      batch.set(userDocRef, { flashcardSets: [{ name, flashcards }] });
+      if (selectedCollection && !flashcardSets.find((set) => set.name === selectedCollection)) {
+        alert("Selected collection does not exist.");
+        return;
+      }
     }
-  
-    const colRef = collection(userDocRef, name);
-    console.log("Collection Reference:", colRef);
-  
+
+    const colRef = selectedCollection
+      ? collection(userDocRef, selectedCollection)
+      : collection(userDocRef, name);
+
     flashcards.forEach((card) => {
       if (!card.id) {
         console.error("Card ID is missing:", card);
         return;
       }
-      
+
       const cardDocRef = doc(colRef, card.id);
-      console.log("CardDocRef:", cardDocRef);
       batch.set(cardDocRef, card);
     });
-  
+
     try {
       await batch.commit();
       console.log("Batch committed successfully");
     } catch (error) {
       console.error("Error committing batch:", error);
     }
-  
+
     handleCloseDialog();
     router.push("/flashcards");
   };
-  
 
   return (
     <>
       <AppBar
         position="static"
         color="primary"
-        elevation={0}
-        sx={{ borderRadius: 2 }}
+        elevation={2}
+        sx={{ borderRadius: 2, mb: 2 }}
       >
         <Toolbar>
           <Typography variant="h6" sx={{ flexGrow: 1 }}>
@@ -159,18 +178,37 @@ export default function Generate() {
           <DialogTitle>Save Flashcard Set</DialogTitle>
           <DialogContent>
             <DialogContentText>
-              Please enter a name for your flashcard set.
+              Please enter a name for your flashcard set or select an existing collection.
             </DialogContentText>
-            <TextField
-              autoFocus
-              margin="dense"
-              label="Set Name"
-              type="text"
-              fullWidth
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              sx={{ borderRadius: 2 }}
-            />
+            {!selectedCollection && (
+              <TextField
+                autoFocus
+                margin="dense"
+                label="New Set Name"
+                type="text"
+                fullWidth
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                sx={{ borderRadius: 2, mb: 2 }}
+              />
+            )}
+            {existingCollections.length > 0 && (
+              <FormControl fullWidth sx={{ mb: 2 }}>
+                <InputLabel>Select Collection</InputLabel>
+                <Select
+                  value={selectedCollection}
+                  onChange={(e) => setSelectedCollection(e.target.value)}
+                  label="Select Collection"
+                >
+                  <MenuItem value="">None</MenuItem>
+                  {existingCollections.map((collectionName) => (
+                    <MenuItem key={collectionName} value={collectionName}>
+                      {collectionName}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            )}
           </DialogContent>
           <DialogActions>
             <Button onClick={handleCloseDialog} sx={{ borderRadius: 8 }}>
@@ -204,7 +242,7 @@ export default function Generate() {
             color="primary"
             onClick={handleSubmit}
             fullWidth
-            sx={{ borderRadius: 8 }}
+            sx={{ borderRadius: 8, py: 1.5 }}
           >
             Generate Flashcards
           </Button>
@@ -225,7 +263,7 @@ export default function Generate() {
                       height: 300,
                       borderRadius: 4,
                       color: "text.primary",
-                      // boxShadow: "none",
+                      boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
                       backgroundColor: flipped[index]
                         ? "primary.light"
                         : "background.paper",
@@ -261,7 +299,7 @@ export default function Generate() {
               variant="contained"
               color="primary"
               onClick={handleOpenDialog}
-              sx={{ borderRadius: 8 }}
+              sx={{ borderRadius: 8, py: 1.5 }}
             >
               Save Flashcards
             </Button>
