@@ -70,39 +70,59 @@ export default function Generate() {
     setDialogOpen(false);
   };
 
+  
   const saveFlashcards = async () => {
     if (!name) {
       alert("Please enter a name for your flashcard set.");
       return;
     }
-
+  
     const batch = writeBatch(db);
     const userDocRef = doc(collection(db, "users"), user.id);
+    
+    console.log("User ID:", user.id);
+    console.log("UserDocRef:", userDocRef);
+  
     const docSnap = await getDoc(userDocRef);
-
+  
     if (docSnap.exists()) {
-      const collection = docSnap.data().flashcards || [];
-      if (collection.find((set) => set.name === name)) {
+      let flashcardSets = docSnap.data().flashcardSets || [];
+      if (flashcardSets.find((set) => set.name === name)) {
         alert("A flashcard set with that name already exists.");
         return;
       } else {
-        collection.push({ name, flashcards });
-        batch.set(userDocRef, { flashcardSets: collection }, { merge: true });
+        flashcardSets.push({ name, flashcards });
+        batch.set(userDocRef, { flashcardSets }, { merge: true });
       }
     } else {
-      batch.set(userDocRef, { flashcardSets: [{ name }] });
+      batch.set(userDocRef, { flashcardSets: [{ name, flashcards }] });
     }
-
+  
     const colRef = collection(userDocRef, name);
+    console.log("Collection Reference:", colRef);
+  
     flashcards.forEach((card) => {
-      const cardDocRef = doc(colRef);
+      if (!card.id) {
+        console.error("Card ID is missing:", card);
+        return;
+      }
+      
+      const cardDocRef = doc(colRef, card.id);
+      console.log("CardDocRef:", cardDocRef);
       batch.set(cardDocRef, card);
     });
-
-    await batch.commit();
+  
+    try {
+      await batch.commit();
+      console.log("Batch committed successfully");
+    } catch (error) {
+      console.error("Error committing batch:", error);
+    }
+  
     handleCloseDialog();
     router.push("/flashcards");
   };
+  
 
   return (
     <>
