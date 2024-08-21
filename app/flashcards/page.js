@@ -381,113 +381,152 @@ export default function Flashcard() {
         </Box>
 
         <Grid container spacing={3} sx={{ mt: 4, px: { xs: 1, sm: 2, md: 4 } }}>
-      {filteredFlashcardSets.length > 0 ? (
-        filteredFlashcardSets.map((set, setIndex) => (
-          <Grid item xs={12} key={setIndex}>
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                mb: { xs: 1, sm: 2 },
-                justifyContent: "center",
-                flexDirection: { xs: "column", sm: "row" }, // Stack vertically on small screens
-                gap: { xs: 1, sm: 2 }, // Adjust gap between elements
-              }}
-            >
-              <Typography variant="h6" sx={{ flexGrow: 1, textAlign: { xs: "center", sm: "left" } }}>
-                {set.name || `Set ${setIndex + 1}`}
-              </Typography>
-              <Box sx={{ display: "flex", gap: 1 }}>
-                <IconButton
-                  onClick={() => handleOpenEditCollectionDialog(setIndex)}
-                  color="primary"
+          {filteredFlashcardSets.length > 0 ? (
+            filteredFlashcardSets.map((set, setIndex) => (
+              <Grid item xs={12} key={setIndex}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    mb: { xs: 1, sm: 2 },
+                    justifyContent: "center",
+                    flexDirection: { xs: "column", sm: "row" }, // Stack vertically on small screens
+                    gap: { xs: 1, sm: 2 }, // Adjust gap between elements
+                  }}
                 >
-                  <EditIcon />
-                </IconButton>
-                <IconButton
-                  onClick={() => handleOpenConfirmationDialog("deleteCollection", setIndex)}
-                  color="error"
-                >
-                  <DeleteIcon />
-                </IconButton>
-              </Box>
-            </Box>
-            <Grid container spacing={3} justifyContent="center">
-              {set.flashcards.map((flashcard, index) => (
-                <Grid item xs={12} sm={6} md={4} lg={3} key={index} sx={{ display: 'flex', justifyContent: 'center', p: { xs: 1, sm: 2 } }}>
-                  <Card
-                    onClick={() => handleFlip(`${setIndex}-${index}`)}
+                  <Typography
+                    variant="h6"
                     sx={{
-                      width: { xs: '100%', sm: 250, md: 300 }, // Responsive width
-                      height: { xs: 200, sm: 250, md: 300 }, // Responsive height
-                      borderRadius: 8,
-                      color: "text.primary",
-                      backgroundColor: getRandomMutedColor(), // Apply muted random color
-                      transition: "transform 0.6s",
-                      transform: flipped[`${setIndex}-${index}`] ? "rotateY(180deg)" : "none",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      position: "relative",
-                      perspective: "1000px",
-                      cursor: "pointer",
-                      mb: 2,
-                      p: 2, // Padding inside the Card
+                      flexGrow: 1,
+                      textAlign: { xs: "center", sm: "left" },
                     }}
                   >
-                    <Box
-                      sx={{
-                        width: "100%",
-                        height: "100%",
-                        position: "absolute",
-                        backfaceVisibility: "hidden",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        borderRadius: 8,
-                        backgroundColor: "background.paper",
-                        p: 2, // Padding inside the Box
-                      }}
-                    >
-                      <CardContent>
-                        <Typography
-                          sx={{
-                            textAlign: "center",
-                            transform: flipped[`${setIndex}-${index}`] ? "scaleX(-1)" : "none",
-                          }}
-                        >
-                          {flipped[`${setIndex}-${index}`] ? flashcard.back : flashcard.front}
-                        </Typography>
-                      </CardContent>
-                    </Box>
+                    {set.name || `Set ${setIndex + 1}`}
+                  </Typography>
+                  <Box sx={{ display: "flex", gap: 1 }}>
                     <IconButton
-                      onClick={() => handleOpenEditFlashcardDialog(setIndex, index)}
+                      onClick={() => handleOpenEditCollectionDialog(setIndex)}
                       color="primary"
-                      sx={{ position: "absolute", top: 8, right: 8 }}
                     >
                       <EditIcon />
                     </IconButton>
                     <IconButton
-                      onClick={() => handleOpenConfirmationDialog("deleteFlashcard", setIndex, index)}
+                      onClick={() =>
+                        handleOpenConfirmationDialog(
+                          "deleteCollection",
+                          setIndex
+                        )
+                      }
                       color="error"
-                      sx={{ position: "absolute", top: 8, right: 48 }}
                     >
                       <DeleteIcon />
                     </IconButton>
-                  </Card>
+                  </Box>
+                </Box>
+                <Grid container spacing={3} justifyContent="center">
+                  {set.flashcards.map((flashcard, index) => (
+                    <Grid
+                      item
+                      xs={12}
+                      sm={6}
+                      md={4}
+                      lg={3}
+                      key={index}
+                      sx={{
+                        display: "flex",
+                        justifyContent: "center",
+                        p: { xs: 1, sm: 2 },
+                      }}
+                    >
+                      <Card
+                        onClick={() => handleFlip(`${setIndex}-${index}`)}
+                        sx={{
+                          width: { xs: "100%", sm: 250, md: 300 }, // Responsive width
+                          height: { xs: 200, sm: 250, md: 300 }, // Responsive height
+                          borderRadius: 8,
+                          color: "text.primary",
+                          backgroundColor: getRandomMutedColor(), // Apply muted random color
+                          transition: "transform 0.6s",
+                          transform: flipped[`${setIndex}-${index}`]
+                            ? "rotateY(180deg)"
+                            : "none",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          position: "relative",
+                          perspective: "1000px",
+                          cursor: "pointer",
+                          mb: 2,
+                          p: 2, // Padding inside the Card
+                        }}
+                      >
+                        <Box
+                          sx={{
+                            width: "100%",
+                            height: "100%",
+                            position: "absolute",
+                            backfaceVisibility: "hidden",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            borderRadius: 8,
+                            backgroundColor: "background.paper",
+                            p: 2, // Padding inside the Box
+                          }}
+                        >
+                          <CardContent>
+                            <Typography
+                              sx={{
+                                textAlign: "center",
+                                transform: flipped[`${setIndex}-${index}`]
+                                  ? "scaleX(-1)"
+                                  : "none",
+                              }}
+                            >
+                              {flipped[`${setIndex}-${index}`]
+                                ? flashcard.back
+                                : flashcard.front}
+                            </Typography>
+                          </CardContent>
+                        </Box>
+                        <IconButton
+                          onClick={() =>
+                            handleOpenEditFlashcardDialog(setIndex, index)
+                          }
+                          color="primary"
+                          sx={{ position: "absolute", top: 8, right: 8 }}
+                        >
+                          <EditIcon />
+                        </IconButton>
+                        <IconButton
+                          onClick={() =>
+                            handleOpenConfirmationDialog(
+                              "deleteFlashcard",
+                              setIndex,
+                              index
+                            )
+                          }
+                          color="error"
+                          sx={{ position: "absolute", top: 8, right: 48 }}
+                        >
+                          <DeleteIcon />
+                        </IconButton>
+                      </Card>
+                    </Grid>
+                  ))}
                 </Grid>
-              ))}
-            </Grid>
-          </Grid>
-        ))
-      ) : (
-        <Typography variant="h6" component="div" sx={{ textAlign: 'center', width: '100%', py: 4 }}>
-          No flashcards available
-        </Typography>
-      )}
-    </Grid>
-
-
+              </Grid>
+            ))
+          ) : (
+            <Typography
+              variant="h6"
+              component="div"
+              sx={{ textAlign: "center", width: "100%", py: 4 }}
+            >
+              No flashcards available
+            </Typography>
+          )}
+        </Grid>
       </Container>
       <Dialog
         open={openAddFlashcardDialog}
