@@ -70,21 +70,17 @@ export default function Generate() {
     setDialogOpen(false);
   };
 
-  
   const saveFlashcards = async () => {
     if (!name) {
       alert("Please enter a name for your flashcard set.");
       return;
     }
-  
+
     const batch = writeBatch(db);
     const userDocRef = doc(collection(db, "users"), user.id);
-    
-    console.log("User ID:", user.id);
-    console.log("UserDocRef:", userDocRef);
-  
+
     const docSnap = await getDoc(userDocRef);
-  
+
     if (docSnap.exists()) {
       let flashcardSets = docSnap.data().flashcardSets || [];
       if (flashcardSets.find((set) => set.name === name)) {
@@ -97,40 +93,37 @@ export default function Generate() {
     } else {
       batch.set(userDocRef, { flashcardSets: [{ name, flashcards }] });
     }
-  
+
     const colRef = collection(userDocRef, name);
-    console.log("Collection Reference:", colRef);
-  
+
     flashcards.forEach((card) => {
       if (!card.id) {
         console.error("Card ID is missing:", card);
         return;
       }
-      
+
       const cardDocRef = doc(colRef, card.id);
-      console.log("CardDocRef:", cardDocRef);
       batch.set(cardDocRef, card);
     });
-  
+
     try {
       await batch.commit();
       console.log("Batch committed successfully");
     } catch (error) {
       console.error("Error committing batch:", error);
     }
-  
+
     handleCloseDialog();
     router.push("/flashcards");
   };
-  
 
   return (
     <>
       <AppBar
         position="static"
         color="primary"
-        elevation={0}
-        sx={{ borderRadius: 2 }}
+        elevation={2}
+        sx={{ borderRadius: 2, mb: 2 }}
       >
         <Toolbar>
           <Typography variant="h6" sx={{ flexGrow: 1 }}>
@@ -204,7 +197,7 @@ export default function Generate() {
             color="primary"
             onClick={handleSubmit}
             fullWidth
-            sx={{ borderRadius: 8 }}
+            sx={{ borderRadius: 8, py: 1.5 }}
           >
             Generate Flashcards
           </Button>
@@ -225,7 +218,7 @@ export default function Generate() {
                       height: 300,
                       borderRadius: 4,
                       color: "text.primary",
-                      // boxShadow: "none",
+                      boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
                       backgroundColor: flipped[index]
                         ? "primary.light"
                         : "background.paper",
@@ -261,7 +254,7 @@ export default function Generate() {
               variant="contained"
               color="primary"
               onClick={handleOpenDialog}
-              sx={{ borderRadius: 8 }}
+              sx={{ borderRadius: 8, py: 1.5 }}
             >
               Save Flashcards
             </Button>
