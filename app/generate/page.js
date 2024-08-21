@@ -1,6 +1,6 @@
 "use client";
 
-import { UserButton,useUser } from "@clerk/clerk-react";
+import { UserButton, useUser } from "@clerk/clerk-react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { db } from "../../firebase";
@@ -49,6 +49,7 @@ export default function Generate() {
 
       const data = await response.json();
       setFlashcards(data);
+      setFlipped(new Array(data.length).fill(false));
     } catch (error) {
       console.error("Error generating flashcards:", error);
       alert("An error occurred while generating flashcards. Please try again.");
@@ -109,7 +110,7 @@ export default function Generate() {
         position="static"
         color="primary"
         elevation={0}
-        sx={{ borderRadius: 2 }} // Rounded AppBar
+        sx={{ borderRadius: 2 }}
       >
         <Toolbar>
           <Typography variant="h6" sx={{ flexGrow: 1 }}>
@@ -199,15 +200,33 @@ export default function Generate() {
                 <Grid item xs={12} sm={6} md={4} key={index}>
                   <Card
                     onClick={() => handleCardClick(index)}
-                    sx={{ borderRadius: 4, boxShadow: "none" }}
+                    sx={{
+                      width: 300,
+                      height: 300,
+                      borderRadius: 4,
+                      color: "text.primary",
+                      // boxShadow: "none",
+                      backgroundColor: flipped[index]
+                        ? "primary.light"
+                        : "background.paper",
+                      transition: "transform 0.5s",
+                      transform: flipped[index] ? "rotateY(180deg)" : "none",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
                   >
                     <CardContent>
-                      <Typography variant="h6">Front:</Typography>
-                      <Typography>{flashcard.front}</Typography>
-                      <Typography variant="h6" sx={{ mt: 2 }}>
-                        Back:
+                      <Typography
+                        sx={{
+                          textAlign: "center",
+                          transform: flipped[index]
+                            ? "scaleX(-1)"
+                            : "none",
+                        }}
+                      >
+                        {flipped[index] ? flashcard.back : flashcard.front}
                       </Typography>
-                      <Typography>{flashcard.back}</Typography>
                     </CardContent>
                   </Card>
                 </Grid>
