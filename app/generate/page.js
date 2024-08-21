@@ -152,8 +152,15 @@ export default function Generate() {
         sx={{ borderRadius: 2, mb: 2 }}
       >
         <Toolbar>
-          <Typography variant="h6" sx={{ flexGrow: 1 }}>
-            Flashcard SaaS
+        <Typography variant="h6" sx={{ flexGrow: 1 }}>
+            <Button
+              variant="contained"
+              color="primary"
+              href="/"
+              sx={{ borderRadius: 8 }} // Rounded buttons
+            >
+              Flashcard SaaS
+            </Button>
           </Typography>
           {isLoaded && isSignedIn ? (
             <UserButton />
