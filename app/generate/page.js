@@ -51,7 +51,7 @@ export default function Generate() {
     if (isLoaded && isSignedIn) {
       fetchCollections();
     }
-  }, [isLoaded, isSignedIn, user.id]);
+  }, [isLoaded, isSignedIn, user]);
 
   const handleSubmit = async () => {
     if (!text.trim()) {
