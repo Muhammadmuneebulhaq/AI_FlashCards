@@ -19,8 +19,6 @@ just return the JSON do not return any thing extra
 export async function POST(req) {
 
   try {
-    
-  console.log("req" , req.body);
   
   const openai = new OpenAI({
     baseURL: "https://openrouter.ai/api/v1",
@@ -38,12 +36,9 @@ export async function POST(req) {
     model: 'meta-llama/llama-3.1-8b-instruct:free',
     response_format: { type: 'json_object' },
   })
-  console.log(completion.choices[0].message.content);
   
   // Parse the JSON response from the OpenAI API
   const flashcards = JSON.parse(completion.choices[0].message.content)
-  console.log(flashcards);
-  console.log("success");
   
   // return NextResponse.json({1 : "muneeb"} ,  { status: 201 })
   
