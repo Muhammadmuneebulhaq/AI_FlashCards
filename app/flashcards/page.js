@@ -2,7 +2,7 @@
 
 import { useUser } from '@clerk/nextjs'
 import { useEffect, useState } from 'react'
-import { collection, doc, setDoc, getDoc } from 'firebase/firestore'
+import { collection, doc, setDoc, getDoc, getDocs} from 'firebase/firestore'
 import { db } from '../../firebase'
 import { useRouter } from 'next/navigation'
 import {
@@ -27,9 +27,14 @@ export default function Flashcard() {
       try {
         console.log("Fetching flashcards for user:", user.id)
         const docRef = doc(collection(db, 'users'), user.id)
+        console.log("success");
+        console.log(docRef);
+        // console.log((await getDoc(docRef)).data())
         const docSnap = await getDoc(docRef)
-
+        console.log(docSnap)
+        console.log("success1")
         if (docSnap.exists()) {
+            console.log("success2")
           const collections = docSnap.data().flashcards || []
           console.log("Fetched flashcards:", collections)
           setFlashcards(collections)

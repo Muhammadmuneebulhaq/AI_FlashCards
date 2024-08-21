@@ -19,9 +19,10 @@ import {
   Toolbar,
   Link
 } from '@mui/material';
-import { SignedIn, SignedOut, UserButton } from '@clerk/clerk-react';
+import { SignedIn, SignedOut, UserButton ,useUser} from '@clerk/clerk-react';
 
 export default function Generate() {
+  const { isLoaded, isSignedIn, user } = useUser()
   const [text, setText] = useState('');
   const [flashcards, setFlashcards] = useState([]);
   const [setName, setSetName] = useState('');
@@ -95,14 +96,10 @@ export default function Generate() {
             Flashcard SaaS
           </Typography>
           <Button color="inherit" href="/sign-in">
-            <Link href="/sign-in" passHref>
               Sign In
-            </Link>
           </Button>
           <Button color="inherit" href="/sign-up">
-            <Link href="/sign-up" passHref>
               Sign Up
-            </Link>
           </Button>
         </Toolbar>
       </AppBar>
@@ -116,6 +113,11 @@ export default function Generate() {
         <Button variant="contained" color="primary" href="/about">
           Learn More
         </Button>
+        if (isLoaded || isSignedIn) {
+          <Button variant="contained" color="primary" href="/flashcards">
+            My flashcards
+          </Button>
+        }
       </Box>
     </Container>
   );
